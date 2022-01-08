@@ -1,7 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
 import { ethers, network } from "hardhat"
-import { CoreDAOTreasury, CoreVaultV3, MockProxyAdmin } from "../types"
+import { CoreDAO, CoreDAOTreasury, CoreVaultV3, MockProxyAdmin } from "../types"
 import { impersonate } from "../test/utilities"
 
 const DEPLOYER = "0x5A16552f59ea34E44ec81E58b3817833E9fD5436"
@@ -14,12 +14,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const { deployer } = await getNamedAccounts()
   const AdminProxy = await ethers.getContractAt<MockProxyAdmin>("MockProxyAdmin", ADMIN_PROXY)
+  const CoreDAO = await ethers.getContract<CoreDAO>("CoreDAO")
   const CoreDAOTreasury = await ethers.getContract<CoreDAOTreasury>("CoreDAOTreasury")
 
   await deploy("CoreVaultV3", {
     from: deployer,
     log: true,
-    args: [ethers.constants.AddressZero, CoreDAOTreasury.address],
+    args: [CoreDAO.address, CoreDAOTreasury.address],
     deterministicDeployment: false,
   })
 

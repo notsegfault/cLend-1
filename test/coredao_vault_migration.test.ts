@@ -88,7 +88,8 @@ describe("migrations / coredao vault migration", async () => {
     expect(balancesBefore[3].amount).to.be.equal("0")
     expect(balancesBefore[3].rewardDebt).to.be.equal("0")
 
-    await Vault.migrateVouchers({ from: user })
+    const userSigner = await ethers.getSigner(user)
+    await Vault.connect(userSigner).migrateVouchers()
 
     const coreBalanceAfter = await Core.balanceOf(user)
     const balancesAfter = [

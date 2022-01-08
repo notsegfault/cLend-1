@@ -34,8 +34,8 @@ describe("Lending", function () {
     coreCollaterability = await cLending.collaterabilityOfToken(constants.CORE)
     coreDaiCollaterability = await cLending.loanDefaultThresholdPercent()
 
-    CORE = await ethers.getContractAt<IERC20>("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", constants.CORE)
-    DAI = await ethers.getContractAt<IERC20>("@openzeppelin/contracts/token/ERC20/IERC20.sol:IERC20", constants.DAI)
+    CORE = await ethers.getContractAt<IERC20>("IERC20", constants.CORE)
+    DAI = await ethers.getContractAt<IERC20>("IERC20", constants.DAI)
 
     // Give some CORE to alice
     await impersonate(constants.CORE_MULTISIG)

@@ -2,14 +2,14 @@
 
 // Sources flattened with hardhat v2.8.2 https://hardhat.org
 
-// File @openzeppelin/contracts-ethereum-package/contracts/token/ERC20/IERC20.sol@v3.0.0
+// File @openzeppelin/contracts-ethereum-package/contracts/token/ERC20/CoreIERC20.sol@v3.0.0
 
 pragma solidity ^0.6.0;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
  */
-interface IERC20 {
+interface CoreIERC20 {
     /**
      * @dev Returns the amount of tokens in existence.
      */
@@ -330,7 +330,7 @@ library SafeERC20 {
     using Address for address;
 
     function safeTransfer(
-        IERC20 token,
+        CoreIERC20 token,
         address to,
         uint256 value
     ) internal {
@@ -338,7 +338,7 @@ library SafeERC20 {
     }
 
     function safeTransferFrom(
-        IERC20 token,
+        CoreIERC20 token,
         address from,
         address to,
         uint256 value
@@ -347,7 +347,7 @@ library SafeERC20 {
     }
 
     function safeApprove(
-        IERC20 token,
+        CoreIERC20 token,
         address spender,
         uint256 value
     ) internal {
@@ -363,7 +363,7 @@ library SafeERC20 {
     }
 
     function safeIncreaseAllowance(
-        IERC20 token,
+        CoreIERC20 token,
         address spender,
         uint256 value
     ) internal {
@@ -372,7 +372,7 @@ library SafeERC20 {
     }
 
     function safeDecreaseAllowance(
-        IERC20 token,
+        CoreIERC20 token,
         address spender,
         uint256 value
     ) internal {
@@ -389,7 +389,7 @@ library SafeERC20 {
      * @param token The token targeted by the call.
      * @param data The call data (encoded using abi.encode or one of its variants).
      */
-    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+    function _callOptionalReturn(CoreIERC20 token, bytes memory data) private {
         // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
         // we're implementing it ourselves.
 
@@ -943,9 +943,9 @@ interface ICoreDAOTreasury {
 
 // Core Vault distributes fees equally amongst staked pools
 // Have fun reading it. Hopefully it's bug-free. God bless.
-contract CoreVault is OwnableUpgradeSafe {
+contract CoreVaultV3 is OwnableUpgradeSafe {
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
+    using SafeERC20 for CoreIERC20;
 
     // Info of each user.
     struct UserInfo {
@@ -966,7 +966,7 @@ contract CoreVault is OwnableUpgradeSafe {
 
     // Info of each pool.
     struct PoolInfo {
-        IERC20 token; // Address of  token contract.
+        CoreIERC20 token; // Address of  token contract.
         uint256 allocPoint; // How many allocation points assigned to this pool. COREs to distribute per block.
         uint256 accCorePerShare; // Accumulated COREs per share, times 1e12. See below.
         bool withdrawable; // Is this pool withdrawable?
@@ -1005,13 +1005,13 @@ contract CoreVault is OwnableUpgradeSafe {
     // === end upgrade 1 state ===
 
     // === Start Upgrade 2 state ===
-    IERC20 public immutable COREDAO;
+    CoreIERC20 public immutable COREDAO;
     ICoreDAOTreasury public immutable TREASURY;
 
     // === end upgrade 2 state ===
 
     // == start upgrade 2 functions ==
-    constructor(IERC20 _coreDao, ICoreDAOTreasury _treasury) public {
+    constructor(CoreIERC20 _coreDao, ICoreDAOTreasury _treasury) public {
         COREDAO = _coreDao;
         TREASURY = _treasury;
     }
@@ -1081,7 +1081,7 @@ contract CoreVault is OwnableUpgradeSafe {
     // Note contract owner is meant to be a governance contract allowing CORE governance consensus
     function add(
         uint256 _allocPoint,
-        IERC20 _token,
+        CoreIERC20 _token,
         bool _withUpdate,
         bool _withdrawable
     ) public onlyOwner {
@@ -1318,7 +1318,7 @@ contract CoreVault is OwnableUpgradeSafe {
     ) public onlySuperAdmin {
         require(isContract(contractAddress), "Recipent is not a smart contract, BAD");
         require(block.number > contractStartBlock.add(95_000), "Governance setup grace period not over"); // about 2weeks
-        IERC20(tokenAddress).approve(contractAddress, _amount);
+        CoreIERC20(tokenAddress).approve(contractAddress, _amount);
     }
 
     function isContract(address addr) public returns (bool) {
